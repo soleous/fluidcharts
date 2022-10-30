@@ -4,5 +4,5 @@ description: "Generic Kubernetes Chart for TrueNAS SCALE Kubernetes cluster usin
 icon: https://soleous.github.io/fluidcharts/quickchart/images/icon.png
 keywords:
 - generic
-version: 1.2.0
+version: 1.2.1
 appVersion: "quickchart"
