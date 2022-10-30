@@ -1,0 +1,77 @@
+{{/*- range $index, $deployment := .Values.deploymentList */}}
+#---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app: {{ $.Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ $.Release.Name }}
+    spec:
+      {{- if eq .Values.service_type "none" }}
+      {{- if .Values.container_hostNetworkEnable }}
+      hostNetwork: true
+      {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ $.Release.Name }}
+        image: {{ .Values.container_repository }}:{{ .Values.container_repositoryTag }}
+        imagePullPolicy: {{ .Values.container_repositoryPullPolicy }}
+        {{- if .Values.container_envList }}
+        env:
+        {{- range .Values.container_envList }}
+        - name: {{ .variable | quote }}
+          value: {{ .value | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.container_volumeMountsList }}
+        volumeMounts:
+          {{- range .Values.container_volumeMountsList }}
+          - mountPath: {{ .mountPath }}
+            name: {{ .name }}
+            readOnly: {{ .readOnly }}
+          {{- end }}
+        {{- end }}
+        {{- if eq .Values.service_type "clusterIP" }}
+        ports:
+        - name: {{ .Values.service_clusterIPPorts.name }}
+          containerPort: {{ .Values.service_clusterIPPorts.targetPort }}
+          protocol: {{ .Values.service_clusterIPPorts.protocol }}
+        {{- if .Values.service_clusterIPPorts.portList }}
+        {{- range .Values.service_clusterIPPorts.portList }}
+        - name: {{ .name }}
+          containerPort: {{ .targetPort }}
+          protocol: {{ .protocol }}
+        {{- end }}
+        {{- end }}
+        {{- else if eq .Values.service_type "nodePort" }}
+        ports:
+        - name: {{ .Values.service_NodePortPorts.name }}
+          containerPort: {{ .Values.service_NodePortPorts.targetPort }}
+          protocol: {{ .Values.service_NodePortPorts.protocol }}
+        {{- if .Values.service_NodePortPorts.portList }}
+        {{- range .Values.service_NodePortPorts.portList }}
+        - name: {{ .name }}
+          containerPort: {{ .targetPort }}
+          protocol: {{ .protocol }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+      {{- if .Values.container_volumeMountsList }}
+      volumes:
+        {{- range .Values.container_volumeMountsList }}
+        - name: {{ .name }}
+          hostPath:
+            path: {{ .hostPath }}
+        {{- end }}
+      {{- end }}
+{{/*- end */}}
