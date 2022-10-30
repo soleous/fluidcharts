@@ -1,0 +1,6 @@
+apiVersion: v2
+name: quickchart
+description: "Generic Kubernetes Chart for TrueNAS SCALE Kubernetes cluster using externally managed IP addresses"
+keywords:
+- generic
+version: 1.2.0
