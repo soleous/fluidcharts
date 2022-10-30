@@ -1,7 +1,7 @@
 ### Changelog<br>
 
 <a name="version 1.2.1"></a>
-#### version 1.2.0 (2021-10-30)
+#### version 1.2.1 (2021-10-30)
 
 * fixed icon not displaying post deployment
 * ui changes within changelog
