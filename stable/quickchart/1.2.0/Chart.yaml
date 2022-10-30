@@ -4,3 +4,4 @@ description: "Generic Kubernetes Chart for TrueNAS SCALE Kubernetes cluster usin
 keywords:
 - generic
 version: 1.2.0
+appVersion: "quickchart"
