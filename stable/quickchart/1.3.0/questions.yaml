@@ -1,0 +1,469 @@
+groups:
+  - name: "Deployment Contrainer: Image"
+    description: "Configure image for a single container within a Deployment"
+  - name: "Deployment Contrainer: Resources"
+    description: "Configure Resources for a single container within a Deployment"
+  - name: "Deployment Contrainer: Enviromental Variables"
+    description: "Configure Enviromental Variables for a single container within a Deployment"
+  - name: "Deployment Contrainer: Storage"
+    description: "Configure Stroage for a single container within a Deployment"
+  - name: "Deployment Contrainer: Network"
+    description: "Configure Networking for a single container within a Deployment"
+  - name: "Networking"
+    description: "Configure Services that are assigned to the Container in the Deployment"
+
+questions:
+  ##############################################################
+  ################ Deployment Contrainer: Image ################
+  ##############################################################
+  ### Container Image Configuration
+  - variable: container_repository
+    group: "Deployment Contrainer: Image"
+    label: "Container Image Repository"
+    description: >
+      Enter a Docker Image Repository
+      <br><br>If a docker image is not used such as github repository (ghcr.io), truenas may repeatedly ask to update the application.  Currently its recommended to use docker images.
+    schema:
+      type: string
+      required: true
+  - variable: container_repositoryTag
+    group: "Deployment Contrainer: Image"
+    label: "Container Image Tag"
+    description: "Tag to use for specified image.  Please refer to the image developers documentation as tags can differ between images and developers"
+    schema:
+      type: string
+      required: true
+      default: "latest"
+  - variable: container_repositoryPullPolicy
+    group: "Deployment Contrainer: Image"
+    label: "Container Image Pull Policy"
+    description: "Docker Image Pull Policy"
+    schema:
+      type: string
+      default: "IfNotPresent"
+      enum:
+        - value: "IfNotPresent"
+          description: "Only pull image if not present on host"
+        - value: "Always"
+          description: "Always pull image even if present on host"
+        - value: "Never"
+          description: "Never pull image even if it's not present on host"
+  ##################################################################
+  ################ Deployment Contrainer: Resources ################
+  ##################################################################
+    ### Container Resource Requests Configuration
+  - variable: container_resourcesCPUEnable
+    group: "Deployment Contrainer: Resources"
+    label: "Enable CPU Resource Management"
+    description: >
+      Enable to configure Container resource Requests and Limits for resource type CPU
+    schema:
+      type: boolean
+      default: false
+  - variable: container_resourcesCPU
+    group: "Deployment Contrainer: Resources"
+    label: "CPU Resource Requests and Limits"
+    schema:
+      show_if: [["container_resourcesCPUEnable", "=", true]]
+      type: dict
+      attrs:
+        - variable: request
+          group: "Deployment Contrainer: Resources"
+          label: "CPU Request (cores)"
+          description: >
+            Resource <b>Requests</b> are resources what the container is guaranteed to get.  When configured, Kubernetes will only schedule the pod on a node that can give it that resource.
+            <br><br>Enter the amount of units for the CPU request in whole (1), fractional (0.5) or milli (500m) amounts.
+            <br><br>In Kubernetes 1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core, depending on whether the node is a physical host or a virtual machine running inside a physical machine.
+            <br><br>Fractional amounts are allowed.  For example, When you define a unit as 0.5, you are requesting half as much CPU time compared to if you asked for 1.0 CPU core.  The milli (m) suffice denoting one thousandth is also supported, for example, 0.5 units is equivalent to the expression 500m.
+          schema:
+            type: string
+            default: "2"
+            required: true
+        - variable: limit
+          group: "Deployment Contrainer: Resources"
+          label: "CPU Limit (cores)"
+          description: >
+            When Resource <b>Limits</b> are configured Kubernetes will encore the limit and prevent the container from using more than the configured resource limit.
+            <br><br>Enter the amount of units for the CPU limit in whole (1), fractional (0.5) or milli (500m) amounts.  <b>Leave empty for no limits.</b>
+            <br><br>In Kubernetes 1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core, depending on whether the node is a physical host or a virtual machine running inside a physical machine.
+            <br><br>Fractional amounts are allowed.  For example, When you define a unit as 0.5, you are requesting half as much CPU time compared to if you asked for 1.0 CPU core.  The milli (m) suffice denoting one thousandth is also supported, for example, 0.5 units is equivalent to the expression 500m.
+          schema:
+            type: string
+            default: ""
+  ### Container Resource Limits Configuration
+  - variable: container_resourcesMemoryEnable
+    group: "Deployment Contrainer: Resources"
+    label: "Enable Memory Resource Management"
+    description: >
+      Enable to configure Container resource Requests and Limits for resource type Memory
+    schema:
+      type: boolean
+      default: false
+  - variable: container_resourcesMemory
+    group: "Deployment Contrainer: Resources"
+    label: "Memory Resource Requests and Limits"
+    schema:
+      show_if: [["container_resourcesMemoryEnable", "=", true]]
+      type: dict
+      attrs:
+        - variable: request
+          group: "Deployment Contrainer: Resources"
+          label: "Memory Request (bits)"
+          description: >
+            Resource <b>Requests</b> are resources what the container is guaranteed to get.  When configured, Kubernetes will only schedule the pod on a node that can give it that resource.
+            <br><br>Enter the amount of bits for the Memory request.
+            <br><br>You can express memory as a plain integer (representing bits) or as a fixed-point number using a quantity suffixes such a M or Mi.
+            <br><br><b>Quantity Suffixes:</b>
+            <br>bits (e.g. 1k = 1000 bit) - m, (no suffix), k, M, G, T, P, E
+            <br>bytes (e.g. 1Ki = 1024 bit) - Ki, Mi, Gi, Ti, Pi, Ei
+            <br><br><b><i>Note: The above suffices are listed from lowest to highest multiples and these suffixes are case senitive</i></b>
+          schema:
+            type: string
+            default: "2Gi"
+            required: true
+        - variable: limit
+          group: "Deployment Contrainer: Resources"
+          label: "Memory Limit (bits)"
+          description: >
+            When Resource <b>Limits</b> are configured Kubernetes will encore the limit and prevent the container from using more than the configured resource limit.
+            <br><br>Enter the amount of bits for the Memory limit.  <b>Leave empty for no limits.</b>
+            <br><br>You can express memory as a plain integer (representing bits) or as a fixed-point number using a quantity suffixes such a M or Mi.
+            <br><br><b>Quantity Suffixes:</b>
+            <br>bits (e.g. 1k = 1000 bit) - m, (no suffix), k, M, G, T, P, E
+            <br>bytes (e.g. 1Ki = 1024 bit) - Ki, Mi, Gi, Ti, Pi, Ei
+            <br><br><b><i>Note: The above suffices are listed from lowest to highest multiples and these suffixes are case senitive</i></b>
+          schema:
+            type: string
+            default: ""
+  ###############################################################################
+  ################ Deployment Contrainer: Enviromental Variables ################
+  ###############################################################################
+  ### Container Environment Variable
+  - variable: container_envList
+    group: "Deployment Contrainer: Enviromental Variables"
+    label: "Enviromental Variables"
+    schema:
+      type: list
+      items:
+        - variable: envValues
+          label: "Variable/Value Pair"
+          description: "Enviroment variables are variables that can be passed to the container.  Please see the image developers documentation as these settings will differ between developers and images"
+          schema:
+            type: dict
+            attrs:
+              - variable: variable
+                label: "Variable"
+                schema:
+                  type: string
+                  required: true
+              - variable: value
+                label: "Value"
+                schema:
+                  type: string
+                  required: true
+  ################################################################
+  ################ Deployment Contrainer: Storage ################
+  ################################################################
+  ### Volume Mount Configuration
+  - variable: container_volumeMountsList
+    group: "Deployment Contrainer: Storage"
+    label: "Volume Mounts"
+    schema:
+      type: list
+      items:
+        - variable: volumeMountValues
+          label: "Volume Mount"
+          description: "Host data mounted directly to a container provides a simple means of persisting data between containers.  Simular to Docker volume 'bind mounts', Kubernetes Volume 'hostPath' exposes a host's file or directory into the container as a mount path."
+          schema:
+            type: dict
+            attrs:
+              - variable: name
+                label: "Volume Mount Name"
+                schema:
+                  type: string
+                  required: true
+              - variable: hostPath
+                label: "Host Path"
+                schema:
+                  type: hostpath
+                  required: true
+              - variable: mountPath
+                label: "Mount Path"
+                schema:
+                  type: path
+                  required: true
+              - variable: readOnly
+                label: "Enable Read Only"
+                schema:
+                  type: boolean
+                  default: false
+  ################################################################
+  ################ Deployment Contrainer: Network ################
+  ################################################################
+  ### Container Port Configuration
+  - variable: container_hostNetworkEnable
+    group: "Deployment Contrainer: Network"
+    label: "Enable Privleged hostNetwork Networking"
+    description: "Kubernetes 'hostNetwork' changes the network namespace to the host and is not normally recommended for security and scalibility reasons, so use with caution.  When enabled, all containers in the pod are directly exposed to network interfaces and traffic of the host"
+    schema:
+      hidden: true
+      type: boolean
+      default: false
+   #### Container Port Configuration
+  - variable: container_portsList
+    group: "Deployment Contrainer: Network"
+    label: "Container Ports"
+    schema:
+      hidden: true
+      show_if: [["container_hostNetworkEnable", "=", false]]
+      type: list
+      items:
+        - variable: portValues
+          label: "Container Port"
+          description: "Network ports that will be exposed to the container for other containers and other kubernetes api's to communicate with.  Therefore by default, communication is limited to its network and namespace and cannot be communicated with, from outside these areas."
+          schema:
+            type: dict
+            attrs:
+              - variable: name
+                label: "Port Name"
+                schema:
+                  type: string
+                  required: true
+              - variable: port
+                label: "Container Port"
+                schema:
+                  type: int
+                  required: true
+              - variable: protocol
+                label: "Protocol"
+                schema:
+                  type: string
+                  default: "TCP"
+                  enum:
+                    - value: "TCP"
+                      description: "TCP Protocol"
+                    - value: "UDP"
+                      description: "UDP Protocol"
+  ############################################
+  ################ Networking ################
+  ############################################
+  ### Service Type
+  - variable: service_type
+    group: "Networking"
+    label: "Select Service Type"
+    description: >
+      Select between a Kubernetes Service Type or None/Pod networking only.
+      <br><br>A Kubernetes Service is an api that can exposes containers outside of its namespace.  There are several services and other api's, however currently only clusterIP and and nodePort can be configured. 
+      <br><br><b>clusterIP:</b> Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable from within the cluster.  However an externalIP can be configured to expose it externally on a specific IP, that is not managed by Kubernetes.
+      <br><br><b>nodePort:</b> Exposes the Service on each Node's IP at a static port.  To make the node port available, Kubernetes also sets up a cluster IP address, the same as if you had requested clusterIP.
+      <br><br><b>Pod networking only:</b> This does not create a service.  It is useful if the container does not need to be exposed outside of its namespace or if configuring hostNetwork.
+    schema:
+      type: string
+      default: "clusterIP"
+      enum:
+        - value: "clusterIP"
+          description: "Service: clusterIP - Exposes the Service only on a cluster-internal IP or externally when an External IP is configured"
+        - value: "nodePort"
+          description: "Service: nodePort - Exposes the Service on each Node's IP at a static port"
+        - value: "none"
+          description: "No Service (Pod only networking) - Do not configure a Service (useful for hostNetwork or not exposing the application externally)"
+  ### Cluster IP Port Configuration
+  - variable: service_clusterIPPorts
+    group: "Networking"
+    label: "Service: clusterIP Port"
+    schema:
+      show_if: [["service_type", "=", "clusterIP"]]
+      type: dict
+      attrs:
+        - variable: name
+          label: "Port Name"
+          schema:
+            type: string
+            required: true
+        - variable: protocol
+          label: "Protocol"
+          schema:
+            type: string
+            default: "TCP"
+            enum:
+              - value: "TCP"
+                description: "TCP Protocol"
+              - value: "UDP"
+                description: "UDP Protocol"
+        - variable: port
+          label: "Port (Service)"
+          schema:
+            type: int
+            required: true
+        - variable: targetPort
+          label: "Target Port (Pod/Container)"
+          schema:
+            type: int
+            required: true
+        ### Port Configuration
+        - variable: portList
+          label: "Additional clusterIP Ports"
+          description: "Specify ports for the service"
+          schema:
+            type: list
+            items:
+              - variable: portValues
+                label: "Additional clusterIP Port"
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: name
+                      label: "Port Name"
+                      schema:
+                        type: string
+                        required: true
+                    - variable: protocol
+                      label: "Protocol"
+                      schema:
+                        type: string
+                        default: "TCP"
+                        enum:
+                          - value: "TCP"
+                            description: "TCP Protocol"
+                          - value: "UDP"
+                            description: "UDP Protocol"
+                    - variable: port
+                      label: "Port (Service)"
+                      schema:
+                        type: int
+                        required: true
+                    - variable: targetPort
+                      label: "Target Port (Pod/Container)"
+                      schema:
+                        type: int
+                        required: true
+  ### Cluster IP External IP
+  - variable: service_externalIPs
+    group: "Networking"
+    label: "Service: externalIPs"
+    schema:
+      show_if: [["service_type", "=", "clusterIP"]]
+      type: dict
+      attrs:
+        - variable: externalIPsEnable
+          group: "Networking"
+          label: "Enable externalIP"
+          description: >
+            If there are external IPs that route to one or more cluster nodes, Kubernetes Services can be exposed on those externalIPs. Traffic that ingresses into the cluster with the external IP (as destination IP), on the Service port, will be routed to one of the Service endpoints. externalIPs are not managed by Kubernetes and are the responsibility of the cluster administrator.
+            <br><br>As the externalIPs are not managed by Kubernetes, it is important to make sure any IP addresses are assigned to an interface.
+          schema:
+            type: boolean
+            default: true
+        - variable: externalIP
+          group: "Networking"
+          label: "External IP Address"
+          schema:
+            show_if: [["externalIPsEnable", "=", true]]
+            type: string
+            required: true
+            $ref:
+              - "definitions/nodeIP"
+        - variable: externalIPList
+          label: "Additional externalIP Addresses"
+          schema:
+            show_if: [["externalIPsEnable", "=", true]]
+            type: list
+            items:
+              - variable: externalIP
+                label: "External IP Address"
+                schema:
+                  type: ipaddr
+                  required: true
+  ### Node Port Configuration
+  - variable: service_NodePortPorts
+    group: "Networking"
+    label: "Service: nodePort Port"
+    schema:
+      show_if: [["service_type", "=", "nodePort"]]
+      type: dict
+      attrs:
+        - variable: name
+          label: "Port Name"
+          schema:
+            type: string
+            required: true
+        - variable: protocol
+          label: "Protocol"
+          schema:
+            type: string
+            default: "TCP"
+            enum:
+              - value: "TCP"
+                description: "TCP Protocol"
+              - value: "UDP"
+                description: "UDP Protocol"
+        - variable: port
+          label: "Port (Service)"
+          schema:
+            type: int
+            required: true
+        - variable: targetPort
+          label: "Target Port (Pod/Container)"
+          schema:
+            type: int
+            required: true
+        - variable: nodePort
+          label: "Node Port (External)"
+          schema:
+            type: int
+        ##### Port Configuration
+        - variable: portList
+          label: "Additional nodePort Ports"
+          description: "Specify ports for the service"
+          schema:
+            type: list
+            items:
+              - variable: portValues
+                label: "Service: nodePort Port"
+                description: "Configure all ports the container requires to function"
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: name
+                      label: "Port Name"
+                      schema:
+                        type: string
+                        required: true
+                    - variable: protocol
+                      label: "Protocol"
+                      schema:
+                        type: string
+                        default: "TCP"
+                        enum:
+                          - value: "TCP"
+                            description: "TCP Protocol"
+                          - value: "UDP"
+                            description: "UDP Protocol"
+                    - variable: port
+                      label: "Port (Service)"
+                      schema:
+                        type: int
+                        required: true
+                    - variable: targetPort
+                      label: "Target Port (Pod/Container)"
+                      schema:
+                        type: int
+                        required: true
+                    - variable: nodePort
+                      label: "nodePort Port (External)"
+                      schema:
+                        type: int
+  ### Container Port Configuration
+  - variable: pod_hostNetwork
+    group: "Networking"
+    label: "Deployment Pod: hostNetwork"
+    schema:
+      show_if: [["service_type", "=", "none"]]
+      type: dict
+      attrs:
+        - variable: container_hostNetworkEnable
+          label: "Enable Privleged hostNetwork Networking"
+          description: "Kubernetes 'hostNetwork' changes the network namespace to the host and is not normally recommended for security and scalibility reasons, so use with caution.  When enabled, all containers in the pod are directly exposed to network interfaces and traffic of the host"
+          schema:
+            type: boolean
+            default: false

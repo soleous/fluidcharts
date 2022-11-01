@@ -1,0 +1,6 @@
+container_resourcesCPU:
+  limit: ""
+  request: ""
+container_resourcesMemory:
+  limit: ""
+  request: ""
