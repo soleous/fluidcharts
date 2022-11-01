@@ -11,6 +11,7 @@ __pycache__
 config.py
 auto_config.py
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
 /docs/api/_build/
