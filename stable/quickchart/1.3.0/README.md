@@ -7,7 +7,7 @@ Simular to TrueNAS SCALE's "Launch Docker Image", quickchart is a simple deploym
 ### TrueNAS SCALE Networking Tips
 - By default Kubernetes limits container/pod communication with the host including Virtual Machines within TrueNAS SCALE.  If this is needed a common workaround is to use a bridge interface with host IP addresses joined to the physical network interface.  Virtual Machines will also need to use this bridge.
 - To expose more IP addresses to use with ClusterIP with ExternalIP, simply add extra Aliases to the network interface.
-- Using port 80 and 443, or any port used by TrueNAS, requires that you remove that IP address from existing TrueNAS services.  As TrueNAS by default uses all IP addresses for GUI, remove those IP addresses from the 'GUI' 'Settings' within 'System Settings' to free up ports 80 and 443.
+- Using port 80 and 443, or any port used by TrueNAS SCALE, requires that you remove that IP address from existing TrueNAS SCALE services.  As TrueNAS SCALE by default uses all IP addresses for GUI, remove those IP addresses from the 'GUI' 'Settings' within 'System Settings' to free up ports 80 and 443.
  
 ### Known Issues
-- Use a docker image.  If a docker image is not used such as github repository (ghcr.io), truenas may repeatedly ask to update the application. Currently it's recommended to use docker images.
+- Use a docker image.  If a docker image is not used such as github repository (ghcr.io), TrueNAS SCALE may repeatedly ask to update the application. Currently it's recommended to use docker images.
