@@ -7,9 +7,9 @@ groups:
     description: "Configure Resources for the single container"
   - name: "Container: Enviromental Variables"
     description: "Configure Enviromental Variables for the single container"
-  - name: "Volume: Persistent Volumes (Storage)"
+  - name: "Volumes: Persistent Volumes (Storage)"
     description: "Configure storage volumes for the pod and assign to the single container"
-  - name: "Networking"
+  - name: "Service (Networking)"
     description: "Configure Networking such as a Services API that routes traffic to the single Container"
 
 questions:
@@ -43,9 +43,9 @@ questions:
             default: false
   - variable: deployment_details_api
     label: >
-      TrueNAS SCALE uses Kubernetes for container orchestration and this chart uses its API 'Deployment' to deploy a 
+      TrueNAS SCALE uses Kubernetes for container orchestration and this chart uses its API 'Deployment' to deploy a
       Pod with a single Container.  Pods are nonpermanent resources, the smallest unit of computing within Kubernetes and they can house multiple containers, however to aid
-      in rapid deployment a single container is only possible with this chart.  
+      in rapid deployment a single container is only possible with this chart.
       Furthermore, each App deployed within TrueNAS SCALE receives its own namespace.
     group: "Deployment: Details"
     schema:
@@ -258,12 +258,12 @@ questions:
                 schema:
                   type: string
                   required: true
-  ######################################################################
-  ################ Volume: Persistent Volumes (Storage) ################
-  ######################################################################
+  #######################################################################
+  ################ Volumes: Persistent Volumes (Storage) ################
+  #######################################################################
   ### Volume Mount Configuration
   - variable: volume_HostPathList
-    group: "Volume: Persistent Volumes (Storage)"
+    group: "Volumes: Persistent Volumes (Storage)"
     label: "HostPath Volumes"
     schema:
       type: list
@@ -271,7 +271,7 @@ questions:
         - variable: hostPathValues
           label: "HostPath Volume"
           description: >
-            Containers uses Volume Mounts (volumeMount) to mount different storage 'Volumes' directly to an internal path (mountPath). 
+            Containers uses Volume Mounts (volumeMount) to mount different storage 'Volumes' directly to an internal path (mountPath).
             A 'Persistant Volume' is a type of 'Volume' thats data is persisted between containers. Currently only volumes with 'hostPath' can be configured.
             <br><br><b>hostPath:</b> Simular to Docker volume 'bind mounts', in Kubernetes a Volume with 'hostPath' exposes a host's file or directory to the containers volumeMount.
           schema:
@@ -297,12 +297,12 @@ questions:
                 schema:
                   type: boolean
                   default: false
-  ############################################
-  ################ Networking ################
-  ############################################
+  ######################################################
+  ################ Service (Networking) ################
+  ######################################################
   ### Service Type
   - variable: service_type
-    group: "Networking"
+    group: "Service (Networking)"
     label: "Select Service Type"
     description: >
       Select between a Kubernetes Service Type or No Service.
@@ -322,7 +322,7 @@ questions:
           description: "No Service (Pod only networking) - Do not configure a Service (useful for hostNetwork or not exposing the application externally)"
   ### Cluster IP Port Configuration
   - variable: service_clusterIPPorts
-    group: "Networking"
+    group: "Service (Networking)"
     label: "Service: clusterIP Port"
     schema:
       show_if: [["service_type", "=", "clusterIP"]]
@@ -392,14 +392,13 @@ questions:
                         required: true
   ### Cluster IP External IP
   - variable: service_externalIPs
-    group: "Networking"
+    group: "Service (Networking)"
     label: "Service: externalIPs"
     schema:
       show_if: [["service_type", "=", "clusterIP"]]
       type: dict
       attrs:
         - variable: externalIPsEnable
-          group: "Networking"
           label: "Enable externalIP"
           description: >
             If there are external IP addresses that route to one or more cluster nodes, Kubernetes Services can be exposed to those IP addresses using externalIPs. Traffic that ingresses into the cluster using externalIPs (as a destination IP address), on the Service port, will be routed to one of the Service endpoints. ExternalIPs are not managed by Kubernetes and are the responsibility of the cluster administrator.
@@ -408,7 +407,6 @@ questions:
             type: boolean
             default: true
         - variable: externalIP
-          group: "Networking"
           label: "External IP Address"
           schema:
             show_if: [["externalIPsEnable", "=", true]]
@@ -429,7 +427,7 @@ questions:
                   required: true
   ### Node Port Configuration
   - variable: service_NodePortPorts
-    group: "Networking"
+    group: "Service (Networking)"
     label: "Service: nodePort Port"
     schema:
       show_if: [["service_type", "=", "nodePort"]]
@@ -508,7 +506,7 @@ questions:
                         type: int
   ### Container Port Configuration
   - variable: pod_hostNetwork
-    group: "Networking"
+    group: "Service (Networking)"
     label: "Pod: hostNetwork"
     description: "A Pod with 'hostNetwork' enabled, changes the network namespace to the host and is not normally recommended for security and scalibility reasons, so use with caution.  When enabled, all containers in the pod are directly exposed to network interfaces and traffic of the host"
     schema:

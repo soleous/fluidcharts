@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+import json
+import os
+import sys
+
+from middlewared.service import CallError
+
+def migrate(values):
+    if values.get('volume_HostPathList'):
+        return values
+    
+    values.update({'volume_HostPathList': values['container_volumeMountsList']})
+    return values
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        exit(1)
+
+    if os.path.exists(sys.argv[1]):
+        with open(sys.argv[1], "r") as f:
+            print(json.dumps(migrate(json.loads(f.read()))))
