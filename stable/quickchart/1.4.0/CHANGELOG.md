@@ -1,13 +1,14 @@
 ### Changelog<br>
 
 <a name="version 1.4.0"></a>
-#### version 1.4.0 (2022-11-06)
+#### version 1.4.0 (2022-11-10)
 
 * Fixed misleading question relating to Kubernetes
 * Changed language to be more Kubernetes
 * Added Deployment Details Group, to tie in missing data for help sections
 * Clarified descriptions
 * Fixed descriptions referencing old question titles
+* Added migration from 1.3.1, due to variable changes
 
 <a name="version 1.3.1"></a>
 #### version 1.3.1 (2022-11-02)
