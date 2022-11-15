@@ -1,0 +1,8 @@
+apiVersion: v2
+name: quickchart
+description: "Generic Kubernetes Chart for TrueNAS SCALE Kubernetes cluster using externally managed IP addresses"
+icon: https://soleous.github.io/fluidcharts/quickchart/images/icon.png
+keywords:
+- generic
+version: 1.5.0
+appVersion: "quickchart"
