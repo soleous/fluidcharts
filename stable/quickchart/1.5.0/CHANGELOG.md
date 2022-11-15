@@ -4,7 +4,7 @@
 #### version 1.5.0 (2022-11-15)
 
 * Added container RunAs Security Context
-* Added pre-deploy-job to change file and directory ownership
+* Added optional pre-deploy-job to change file and directory ownership
 
 <a name="version 1.4.0"></a>
 #### version 1.4.0 (2022-11-10)
