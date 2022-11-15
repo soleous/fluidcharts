@@ -3,7 +3,7 @@
 <a name="version 1.5.0"></a>
 #### version 1.5.0 (2022-11-15)
 
-* Added container RunAs Security Context
+* Added optional container RunAs Security Context
 * Added optional pre-deploy-job to change file and directory ownership
 
 <a name="version 1.4.0"></a>
@@ -24,7 +24,7 @@
 <a name="version 1.3.0"></a>
 #### version 1.3.0 (2022-11-01)
 
-* Added container resources
+* Added optional container resources
 
 <a name="version 1.2.1"></a>
 #### version 1.2.1 (2022-10-30)
