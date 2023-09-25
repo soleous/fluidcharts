@@ -1,0 +1,33 @@
+{
+    "stable": {
+        "quickchart": {
+            "app_readme": "<h1>quickchart</h1>\n<p>quickchart is a chart designed to let user deploy a docker image in a TrueNAS SCALE kubernetes cluster.\nIt provides a mechanism to specify workload type, add external host interfaces in the pods, configure volumes and allocate host resources to the workload.</p>",
+            "categories": [
+                "generic"
+            ],
+            "description": "A Helm chart for deploying simple workloads Kubernetes",
+            "healthy": true,
+            "healthy_error": null,
+            "home": "https://www.truenas.com/",
+            "location": "/__w/charts/charts/charts/quickchart",
+            "latest_version": "2308.0.0",
+            "latest_app_version": "v1",
+            "latest_human_version": "v1_2308.0.0",
+            "last_update": "2023-09-25 12:42:10",
+            "name": "quickchart",
+            "recommended": false,
+            "title": "quickchart",
+            "maintainers": [
+                {
+                    "name": "truenas",
+                    "url": "https://www.truenas.com/",
+                    "email": "dev@ixsystems.com"
+                }
+            ],
+            "tags": [],
+            "screenshots": [],
+            "sources": [],
+            "icon_url": null
+        }
+    }
+}
