@@ -1,0 +1,70 @@
+{{- $preDeployjob_Enable := false }}
+{{- if .Values.volume_HostPathList }}
+{{- range .Values.volume_HostPathList }}
+{{- if .changeOwnerEnable }}
+{{- $preDeployjob_Enable = true }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if $preDeployjob_Enable }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ $.Release.Name | trunc 44 }}-pre-deploy-job"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ template "common.names.chart" . }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  template:
+    metadata:
+      name: "{{ $.Release.Name | trunc 43 }}-pre-deploy-hook"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: {{ template "common.names.chart" . }}
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: pre-deploy-job
+        image: "alpine:latest"
+        command: ["/bin/sh","-c"]
+        args: ["
+          echo Pre-Deploy-Job Commands Starting &&
+          {{- range .Values.volume_HostPathList }}
+          {{- if and (.changeOwnerEnable) (.changeOwner.disclaimer) }}
+          {{- if .changeOwner.UID }}
+          echo Set User Ownership to {{ .changeOwner.UID }} for {{ .mountPath }} &&
+          chown -R {{ .changeOwner.UID }} {{ .mountPath }} &&
+          {{- end }}
+          {{- end }}
+          {{- if and (.changeOwnerEnable) (.changeOwner.disclaimer) }}
+          {{- if .changeOwner.GID }}
+          echo Set Group Ownership to {{ .changeOwner.GID }} for {{ .mountPath }} &&
+          chgrp -R {{ .changeOwner.GID }} {{ .mountPath }} &&
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          echo Pre-Deploy-Job Commands Finished
+          "]
+        {{- if .Values.volume_HostPathList }}
+        volumeMounts:
+          {{- range .Values.volume_HostPathList }}
+          - mountPath: {{ .mountPath }}
+            name: {{ .name }}
+            readOnly: {{ .readOnly }}
+          {{- end }}
+        {{- end }}
+      {{- if .Values.volume_HostPathList }}
+      volumes:
+        {{- range .Values.volume_HostPathList }}
+        - name: {{ .name }}
+          hostPath:
+            path: {{ .hostPath }}
+        {{- end }}
+      {{- end }}
+{{- end }}
