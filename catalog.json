@@ -1,33 +1,35 @@
 {
     "stable": {
         "quickchart": {
-            "app_readme": "<h1>quickchart</h1>\n<p>quickchart is a chart designed to let user deploy a docker image in a TrueNAS SCALE kubernetes cluster.\nIt provides a mechanism to specify workload type, add external host interfaces in the pods, configure volumes and allocate host resources to the workload.</p>",
+            "app_readme": "Generic Kubernetes Chart for TrueNAS SCALE Kubernetes cluster using externally managed IP addresses",
             "categories": [
                 "generic"
             ],
-            "description": "A Helm chart for deploying simple workloads Kubernetes",
+            "description": "Generic Kubernetes Chart for TrueNAS SCALE Kubernetes cluster using externally managed IP addresses",
             "healthy": true,
             "healthy_error": null,
             "home": "https://www.truenas.com/",
-            "location": "/__w/charts/charts/charts/quickchart",
+            "location": "/__w/charts/charts/stable/quickchart",
             "latest_version": "2.0.0",
-            "latest_app_version": "v1",
-            "latest_human_version": "v1_2.0.0",
-            "last_update": "2023-09-25 12:42:10",
+            "latest_app_version": "quickchart_2.0.0",
+            "latest_human_version": "quickchart_2.0.0",
+            "last_update": "2023-09-25 23:01:10",
             "name": "quickchart",
             "recommended": false,
             "title": "quickchart",
             "maintainers": [
                 {
-                    "name": "truenas",
-                    "url": "https://www.truenas.com/",
-                    "email": "dev@ixsystems.com"
+                    "name": "soleous",
+                    "url": "https://github.com/soleous/fluidcharts/",
+                    "email": "Undefined"
                 }
             ],
             "tags": [],
             "screenshots": [],
-            "sources": [],
-            "icon_url": null
+            "sources": [
+                "https://github.com/soleous/fluidcharts/"
+            ],
+            "icon_url": "https://soleous.github.io/fluidcharts/quickchart/images/icon.png"
         }
     }
 }
