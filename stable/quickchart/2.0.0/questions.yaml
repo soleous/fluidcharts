@@ -1,22 +1,22 @@
 groups:
   - name: "Container: Image"
     description: >
-      Specify the container image and configuration.  We recommend using images from https://hub.docker.com/.
+      Specify the container image and configuration.  It's recommended to use images from hub.docker.com.
   - name: "Container: Resources"
     description: >
-      Configure Resources Management for the container, such as limiting memory or CPU usage.
+      Configure resources management for the container, such as limiting memory or CPU usage.
   - name: "Container: Enviromental Variables"
     description: >
-      Set Enviromental Variables that will be defined within the container.
+      Set enviromental variables that will be defined within the container.
   - name: "Container: Security Context"
     description: >
-      Configure security settings for the deployment. Usually advanced settings, please refer to help sections for more information.
+      Configure security settings for the deployment. Please refer to help sections for more information.
   - name: "Volumes: Persistent Volumes (Storage)"
     description: >
       Configure persistent storage or shared data for the container.
   - name: "Service (Networking)"
     description: >
-      Configure Networking for the container. This uses Kubernetes Services API to route traffic to the container.  Please refer to the help sections for more information.
+      Configure networking for the container. This uses Kubernetes Services API to route traffic to the container.  Please refer to the help sections for more information.
 
 questions:
   ##################################################
