@@ -13,7 +13,7 @@ groups:
       Configure security settings for the deployment. Please refer to help sections for more information.
   - name: "Volumes: Persistent Volumes (Storage)"
     description: >
-      Configure persistent storage or shared data for the container.
+      Configure persistent and/or shared storage volumes that will be exposed to the container.
   - name: "Service (Networking)"
     description: >
       Configure networking for the container. This uses Kubernetes Services API to route traffic to the container.  Please refer to the help sections for more information.
