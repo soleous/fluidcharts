@@ -5,7 +5,7 @@ annotations:
 type: application
 version: 2.0.0
 apiVersion: v2
-appVersion: v1
+appVersion: quickchart
 kubeVersion: ">=1.16.0-0"
 maintainers:
   - name: soleous

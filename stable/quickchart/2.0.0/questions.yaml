@@ -1,18 +1,22 @@
 groups:
-  - name: "Deployment: Details"
-    description: "Deployment: Details, that explains how the chart works with Kubernetes"
   - name: "Container: Image"
-    description: "Configure image for a single container within a Pod using a Deployment API"
+    description: >
+      Specify the container image and configuration.  We recommend using images from https://hub.docker.com/.
   - name: "Container: Resources"
-    description: "Configure Resources for the single container"
+    description: >
+      Configure Resources Management for the container, such as limiting memory or CPU usage.
   - name: "Container: Enviromental Variables"
-    description: "Configure Enviromental Variables for the single container"
+    description: >
+      Set Enviromental Variables that will be defined within the container.
   - name: "Container: Security Context"
-    description: "Configure Container Security Context for the single container"
+    description: >
+      Configure security settings for the deployment. Usually advanced settings, please refer to help sections for more information.
   - name: "Volumes: Persistent Volumes (Storage)"
-    description: "Configure storage volumes for the pod and assign to the single container"
+    description: >
+      Configure persistent storage or shared data for the container.
   - name: "Service (Networking)"
-    description: "Configure Networking such as a Services API that routes traffic to the single Container"
+    description: >
+      Configure Networking for the container. This uses Kubernetes Services API to route traffic to the container.  Please refer to the help sections for more information.
 
 questions:
   ##################################################
