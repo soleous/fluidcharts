@@ -1,5 +1,10 @@
 ### Changelog<br>
 <a name="version 2.0.1"></a>
+#### version 2.0.2 (2023-09-26)
+
+* Pre-Deploy-Job bug fix
+
+<a name="version 2.0.1"></a>
 #### version 2.0.1 (2023-09-26)
 
 * Pre-Deploy-Job extended logging to include path
