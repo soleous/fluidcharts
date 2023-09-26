@@ -1,4 +1,13 @@
 ### Changelog<br>
+<a name="version 2.0.0"></a>
+#### version 2.0.0 (2023-09-26)
+
+* TrueNAS SCALE catalog update for Cobia
+
+<a name="version 1.6.0"></a>
+#### version 1.6.0 (2023-01-08)
+
+* TrueNAS SCALE updates and fixes for Bluefin
 
 <a name="version 1.5.1"></a>
 #### version 1.5.1 (2022-11-15)
