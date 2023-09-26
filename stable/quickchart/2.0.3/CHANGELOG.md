@@ -1,8 +1,13 @@
 ### Changelog<br>
+<a name="version 2.0.3"></a>
+#### version 2.0.3 (2023-09-26)
+
+* Pre-Deploy-Job log string changes
+
 <a name="version 2.0.2"></a>
 #### version 2.0.2 (2023-09-26)
 
-* Pre-Deploy-Job bug fix
+* Pre-Deploy-Job log string changes
 
 <a name="version 2.0.1"></a>
 #### version 2.0.1 (2023-09-26)

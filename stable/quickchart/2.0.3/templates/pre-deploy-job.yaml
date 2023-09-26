@@ -38,13 +38,13 @@ spec:
           {{- range .Values.volume_HostPathList }}
           {{- if and (.changeOwnerEnable) (.changeOwner.disclaimer) }}
           {{- if .changeOwner.UID }}
-          echo \"Set User Ownership to {{ .changeOwner.UID }} for {{ .mountPath }} ( {{ .hostPath }} )\" &&
+          echo \"Set User Ownership to {{ .changeOwner.UID }} for {{ .mountPath }} ({{ .hostPath }})\" &&
           chown -R {{ .changeOwner.UID }} {{ .mountPath }} &&
           {{- end }}
           {{- end }}
           {{- if and (.changeOwnerEnable) (.changeOwner.disclaimer) }}
           {{- if .changeOwner.GID }}
-          echo \"Set Group Ownership to {{ .changeOwner.GID }} for {{ .mountPath }} ( {{ .hostPath }} )\" &&
+          echo \"Set Group Ownership to {{ .changeOwner.GID }} for {{ .mountPath }} ({{ .hostPath }})\" &&
           chgrp -R {{ .changeOwner.GID }} {{ .mountPath }} &&
           {{- end }}
           {{- end }}
