@@ -30,14 +30,14 @@ spec:
   {{- else if eq .Values.service_type "nodePort" }}
   ports:
   - name: {{ .Values.service_NodePortPorts.name }}
-    port: {{ .Values.service_NodePortPorts.nodePort }}
+    port: {{ .Values.service_NodePortPorts.port }}
     protocol: {{ .Values.service_NodePortPorts.protocol }}
     targetPort: {{ .Values.service_NodePortPorts.targetPort }}
     nodePort: {{ .Values.service_NodePortPorts.nodePort }}
   {{- if .Values.service_NodePortPorts.portList }}
   {{- range .Values.service_NodePortPorts.portList }}
   - name: {{ .name }}
-    port: {{ .nodePort }}
+    port: {{ .port }}
     protocol: {{ .protocol }}
     targetPort: {{ .targetPort }}
     nodePort: {{ .nodePort }}

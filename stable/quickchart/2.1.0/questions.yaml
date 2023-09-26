@@ -1,0 +1,662 @@
+groups:
+  - name: "Container: Image"
+    description: >
+      Specify the container image and configuration.  It's recommended to use images from hub.docker.com.
+  - name: "Container: Resources"
+    description: >
+      Configure resources management for the container, such as limiting memory or CPU usage.
+  - name: "Container: Enviromental Variables"
+    description: >
+      Set enviromental variables that will be defined within the container.
+  - name: "Container: Security Context"
+    description: >
+      Configure security settings for the deployment. Please refer to help sections for more information.
+  - name: "Volumes: Persistent Volumes (Storage)"
+    description: >
+      Configure persistent and/or shared storage volumes that will be exposed to the container.
+  - name: "Service (Networking)"
+    description: >
+      Configure networking for the container. This uses Kubernetes Services API to route traffic to the container.  Please refer to the help sections for more information.
+
+questions:
+  ##################################################
+  ################ Container: Image ################
+  ##################################################
+  ### Container Image Configuration
+  - variable: container_repository
+    group: "Container: Image"
+    label: "Container Image Repository"
+    description: >
+      Enter a Docker Image Repository, which can be found at https://hub.docker.com/.
+    schema:
+      type: string
+      required: true
+  - variable: container_repositoryTag
+    group: "Container: Image"
+    label: "Container Image Tag"
+    description: >
+      Tag to use for specified image.
+      <br><br>Please refer to the image developers documentation as tags can differ between images and 
+      developers
+    schema:
+      type: string
+      required: true
+      default: "latest"
+  - variable: container_repositoryPullPolicy
+    group: "Container: Image"
+    label: "Container Image Pull Policy"
+    description: "Image pull policy for the container"
+    schema:
+      type: string
+      default: "IfNotPresent"
+      enum:
+        - value: "IfNotPresent"
+          description: "Only pull image if not present on host"
+        - value: "Always"
+          description: "Always pull image even if present on host"
+        - value: "Never"
+          description: "Never pull image even if it's not present on host"
+  ######################################################
+  ################ Container: Resources ################
+  ######################################################
+  ### Container Resource Requests Configuration
+  - variable: container_resourcesCPUEnable
+    group: "Container: Resources"
+    label: "Enable CPU Resource Management"
+    description: >
+      Enable to configure Container resource Requests and Limits for resource type CPU
+    schema:
+      type: boolean
+      default: false
+  - variable: container_resourcesCPU
+    group: "Container: Resources"
+    label: "CPU Resource Requests and Limits"
+    description: >
+      Resource <b>Requests</b> are resources what the container is guaranteed to get.  When 
+      configured, Kubernetes will only schedule the pod on a node that can give it that resource.
+      <br><br>
+      Resource <b>Limits</b> are configured Kubernetes will enforce the limit and prevent the 
+      container from using more than the configured resource limit.
+    schema:
+      show_if: [["container_resourcesCPUEnable", "=", true]]
+      type: dict
+      attrs:
+        - variable: request
+          group: "Container: Resources"
+          label: "CPU Request (cores)"
+          description: >
+            Resource <b>Requests</b> are resources what the container is guaranteed to get.  When 
+            configured, Kubernetes will only schedule the pod on a node that can give it that resource.
+            <br><br>Enter the amount of units for the CPU request in whole (1), fractional (0.5) or 
+            milli (500m) amounts.
+            <br><br>In Kubernetes 1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core, 
+            depending on whether the node is a physical host or a virtual machine running inside a 
+            physical machine.
+            <br><br>Fractional amounts are allowed.  For example, When you define a unit as 0.5, 
+            you are requesting half as much CPU time compared to if you asked for 1.0 CPU core.  
+            The milli (m) suffice denoting one thousandth is also supported, for example, 0.5 units 
+            is equivalent to the expression 500m.
+          schema:
+            type: string
+            default: "2"
+            required: true
+        - variable: limit
+          group: "Container: Resources"
+          label: "CPU Limit (cores)"
+          description: >
+            When Resource <b>Limits</b> are configured Kubernetes will enforce the limit and prevent 
+            the container from using more than the configured resource limit.
+            <br><br>Enter the amount of units for the CPU limit in whole (1), fractional (0.5) or milli 
+            (500m) amounts.  <b>Leave empty for no limits.</b>
+            <br><br>In Kubernetes 1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core, 
+            depending on whether the node is a physical host or a virtual machine running inside a 
+            physical machine.
+            <br><br>Fractional amounts are allowed.  For example, When you define a unit as 0.5, you 
+            are requesting half as much CPU time compared to if you asked for 1.0 CPU core.  The milli (m)
+            suffice denoting one thousandth is also supported, for example, 0.5 units is equivalent to the 
+            expression 500m.
+          schema:
+            type: string
+            default: ""
+  ### Container Resource Limits Configuration
+  - variable: container_resourcesMemoryEnable
+    group: "Container: Resources"
+    label: "Enable Memory Resource Management"
+    description: >
+      Enable to configure Container resource Requests and Limits for resource type Memory
+    schema:
+      type: boolean
+      default: false
+  - variable: container_resourcesMemory
+    group: "Container: Resources"
+    label: "Memory Resource Requests and Limits"
+    description: >
+      Resource <b>Requests</b> are resources what the container is guaranteed to get.  When 
+      configured, Kubernetes will only schedule the pod on a node that can give it that resource.
+      <br><br>
+      Resource <b>Limits</b> are configured Kubernetes will enforce the limit and prevent the 
+      container from using more than the configured resource limit.
+    schema:
+      show_if: [["container_resourcesMemoryEnable", "=", true]]
+      type: dict
+      attrs:
+        - variable: request
+          group: "Container: Resources"
+          label: "Memory Request (bits)"
+          description: >
+            Resource <b>Requests</b> are resources what the container is guaranteed to get.  When configured, 
+            Kubernetes will only schedule the pod on a node that can give it that resource.
+            <br><br>Enter the amount of bits for the Memory request.
+            <br><br>You can express memory as a plain integer (representing bits) or as a fixed-point number 
+            using a quantity suffixes such a M or Mi.
+            <br><br><b>Quantity Suffixes:</b>
+            <br>bits (e.g. 1k = 1000 bit) - m, (no suffix), k, M, G, T, P, E
+            <br>bytes (e.g. 1Ki = 1024 bit) - Ki, Mi, Gi, Ti, Pi, Ei
+            <br><br><b><i>Note: The above suffices are listed from lowest to highest multiples and these 
+            suffixes are case senitive</i></b>
+          schema:
+            type: string
+            default: "2Gi"
+            required: true
+        - variable: limit
+          group: "Container: Resources"
+          label: "Memory Limit (bits)"
+          description: >
+            When Resource <b>Limits</b> are configured Kubernetes will enforce the limit and prevent the 
+            container from using more than the configured resource limit.
+            <br><br>Enter the amount of bits for the Memory limit.  <b>Leave empty for no limits.</b>
+            <br><br>You can express memory as a plain integer (representing bits) or as a fixed-point 
+            number using a quantity suffixes such a M or Mi.
+            <br><br><b>Quantity Suffixes:</b>
+            <br>bits (e.g. 1k = 1000 bit) - m, (no suffix), k, M, G, T, P, E
+            <br>bytes (e.g. 1Ki = 1024 bit) - Ki, Mi, Gi, Ti, Pi, Ei
+            <br><br><b><i>Note: The above suffices are listed from lowest to highest multiples and these 
+            suffixes are case senitive</i></b>
+          schema:
+            type: string
+            default: ""
+  ###################################################################
+  ################ Container: Enviromental Variables ################
+  ###################################################################
+  ### Container Environment Variable
+  - variable: container_envList
+    group: "Container: Enviromental Variables"
+    label: "Enviromental Variables"
+    schema:
+      type: list
+      items:
+        - variable: envValues
+          label: "Variable/Value Pair"
+          description: >
+            Enviroment variables (env) are variables that can be passed to the container.
+            <br><br>Please see the image developers documentation as these settings will differ between 
+            developers and images
+          schema:
+            type: dict
+            attrs:
+              - variable: variable
+                label: "Variable"
+                schema:
+                  type: string
+                  required: true
+              - variable: value
+                label: "Value"
+                schema:
+                  type: string
+                  required: true
+  #############################################################
+  ################ Container: Security Context ################
+  #############################################################
+  ### Container Security Context RunAs Configuration
+  - variable: container_securityContextProcessEnable
+    group: "Container: Security Context"
+    label: "Enable Run Processes as Alternative User or Group"
+    description: >
+      Enable to configure different 'user' or 'group' that processes will run as within the container.
+    schema:
+      type: boolean
+      default: false
+  - variable: container_securityContextProcess
+    group: "Container: Security Context"
+    label: "Container Security Context: Run As"
+    description: >
+      <b>RunAs</b> specifies that for the container, all processes run with that ID.  Leaving this 
+      field empty will use the images configuration which can be root (0).
+      <br><br><b><i>Important: Its not recommended to use root (0) for security reasons.</i></b>
+      <br><br>Some images use hard coded IDs other than root, resulting in this configuration not 
+      taking effect or breaking how the image was intended to run. In these circumstances this setting 
+      is not recommended.
+      <br><br>Any files or directories created by the processes will be owned by the User and Group ID.
+      Therefore volume ownership and permissions need to be defined otherwise the process will be 
+      unable to write or read from that location.
+    schema:
+      show_if: [["container_securityContextProcessEnable", "=", true]]
+      type: dict
+      attrs:
+        - variable: runAsUser
+          label: "Run As User ID (UID)"
+          description: >
+            <b>RunAs</b> specifies that for the container, all processes run with that ID.  Leaving this 
+            field empty will use the images configuration which can be root (0).
+            <br><br><b><i>Important: Its not recommended to use root (0) for security reasons.</i></b>
+            <br><br>Some images use hard coded IDs other than root, resulting in this configuration not 
+            taking effect or breaking how the image was intended to run. In these circumstances this setting 
+            is not recommended.
+            <br><br>Any files or directories created by the processes will be owned by the User and Group ID.
+            Therefore volume ownership and permissions need to be defined otherwise the process will be 
+            unable to write or read from that location.
+            <br><br>Enter User and/or Group IDs, such as 250 or 1000.  This <b>cannot</b> be user names or 
+            group names such as media or root. <b>Leave empty to use the image default.</b>
+          schema:
+            type: string
+            valid_chars: "^[0-9]*$"
+            default: "250"
+        - variable: runAsGroup
+          label: "Run As Group ID (GID)"
+          description: >
+            <b>RunAs</b> specifies that for the container, all processes run with that ID.  Leaving this 
+            field empty will use the images configuration which can be root (0).
+            <br><br><b><i>Important: Its not recommended to use root (0) for security reasons.</i></b>
+            <br><br>Some images use hard coded IDs other than root, resulting in this configuration not 
+            taking effect or breaking how the image was intended to run. In these circumstances this setting 
+            is not recommended.
+            <br><br>Any files or directories created by the processes will be owned by the User and Group ID.
+            Therefore volume ownership and permissions need to be defined otherwise the process will be 
+            unable to write or read from that location.
+            <br><br>Enter User and/or Group IDs, such as 250 or 1000.  This <b>cannot</b> be user names or 
+            group names such as media or root. <b>Leave empty to use the image default.</b>
+          schema:
+            type: string
+            valid_chars: "^[0-9]*$"
+            default: "250"
+  ### Security Context Supplemental Groups Configuration
+  - variable: securityContext_supplementalGroupsEnable
+    group: "Container: Security Context"
+    label: "Enable adding process owner to supplemental groups"
+    description: >
+      Enable to configure additional groups to the first process run within the container.
+    schema:
+      type: boolean
+      default: false
+  - variable: securityContext_supplementalGroups
+    group: "Container: Security Context"
+    label: "Security Context: Supplemental Groups"
+    description: >
+      <b>supplementalGroups</b> specifies a list of groups that the first process run within the container 
+      will receave.
+      <br><br>Some images use hard coded IDs, resulting in this configuration not taking effect as it is 
+      applies to the first process run and not to the process being ran.
+    schema:
+      show_if: [["securityContext_supplementalGroupsEnable", "=", true]]
+      type: dict
+      attrs:
+        - variable: supplementalGroupsList
+          label: "Supplemental Groups"
+          schema:
+            type: list
+            items:
+              - variable: GID
+                label: "Group (GID)"
+                description: >
+                  <b>supplementalGroups</b> specifies a list of groups that the first process run within the container 
+                  will receave.
+                  <br><br>Some images use hard coded IDs, resulting in this configuration not taking effect as it is 
+                  applies to the first process run and not to the process being ran.
+                  <br><br>Enter Group IDs, such as 1000 or 2001.  This <b>cannot</b> be group names such as media 
+                  or root.
+                schema:
+                  type: string
+                  valid_chars: "^[0-9]*$"
+                  required: true
+  #######################################################################
+  ################ Volumes: Persistent Volumes (Storage) ################
+  #######################################################################
+  ### Volume Mount Configuration
+  - variable: volume_HostPathList
+    group: "Volumes: Persistent Volumes (Storage)"
+    label: "HostPath Volumes"
+    schema:
+      type: list
+      items:
+        - variable: hostPathValues
+          label: "HostPath Volume"
+          description: >
+            Containers uses Volume Mounts (volumeMount) to mount different storage 'Volumes' directly 
+            to an internal path (mountPath).  A 'Persistant Volume' is a type of 'Volume' thats data is 
+            persisted between containers. Currently only volumes with 'hostPath' can be configured.
+            <br><br><b>hostPath:</b> Simular to Docker volume 'bind mounts', in Kubernetes a Volume with 
+            'hostPath' exposes a host's files or directories to the containers volumeMount.
+          schema:
+            type: dict
+            attrs:
+              - variable: name
+                label: "Volume Name"
+                schema:
+                  type: string
+                  required: true
+              - variable: hostPath
+                label: "Host Path"
+                schema:
+                  type: hostpath
+                  required: true
+              - variable: mountPath
+                label: "Container: Mount Path"
+                schema:
+                  type: path
+                  required: true
+              ### Volume Mount - Read Only
+              - variable: readOnly
+                label: "Enable Read Only"
+                schema:
+                  type: boolean
+                  default: false
+              ### Volume Mount - Ownership
+              - variable: changeOwnerEnable
+                label: "Enable Pre-Deploy-Job: Change ownership of this volume"
+                description: >
+                  Enable to use the charts custom pre-deploy-job, which changes ownership of all files and 
+                  directories in the volume.
+                schema:
+                  type: boolean
+                  default: false
+              - variable: changeOwner
+                label: "Pre-Deploy-Job: Change Owner Configuration"
+                description: >
+                  <b>Pre-Deploy-Job</b> is a custom job that executes on pre-install and pre-upgrade.  These 
+                  options configure the Pre-Deploy-Job to change the volumes ownership of all files and 
+                  directories to the specified User and/or Group ID.
+                  <br><br>It executes commands 'chown' and 'chgrp' recursively on the volume its configured
+                  for.
+                  <br><br><b><i>Important: Do not set this if you do not understand what it does.  If set on
+                  the wrong volume it will change all ownership of users and groups for all files and
+                  directories.</i></b>
+                  <br><br>It is typically used on appdata such as /config, /data, etc.
+                schema:
+                  show_if: [["changeOwnerEnable", "=", true]]
+                  type: dict
+                  attrs:
+                    - variable: UID
+                      label: "User ID (UID)"
+                      description: >
+                        <b>Pre-Deploy-Job</b> is a custom job that executes on pre-install and pre-upgrade.  These 
+                        options configure the Pre-Deploy-Job to change the volumes ownership of all files and 
+                        directories to the specified User and/or Group ID.
+                        <br><br>It executes commands 'chown' and 'chgrp' recursively on the volume its configured
+                        for.
+                        <br><br><b><i>Important: Do not set this if you do not understand what it does.  If set on
+                        the wrong volume it will change all ownership of users and groups for all files and
+                        directories.</i></b>
+                        <br><br>It is typically used on appdata such as /config, /data, etc.
+                        <br><br>Enter User and/or Group IDs, such as 250 or 1000.  This <b>cannot</b> be 
+                        user names or group names such as media or root. <b>Leaving empty will not change 
+                        ownership.</b>
+                      schema:
+                        type: string
+                        valid_chars: "^[0-9]*$"
+                        default: "250"
+                    - variable: GID
+                      label: "Group ID (GID)"
+                      description: >
+                        <b>Pre-Deploy-Job</b> is a custom job that executes on pre-install and pre-upgrade.  These 
+                        options configure the Pre-Deploy-Job to change the volumes ownership of all files and 
+                        directories to the specified User and/or Group ID.
+                        <br><br>It executes commands 'chown' and 'chgrp' recursively on the volume its configured
+                        for.
+                        <br><br><b><i>Important: Do not set this if you do not understand what it does.  If set on
+                        the wrong volume it will change all ownership of users and groups for all files and
+                        directories.</i></b>
+                        <br><br>It is typically used on appdata such as /config, /data, etc.
+                        <br><br>Enter User and/or Group IDs, such as 250 or 1000.  This <b>cannot</b> be 
+                        user names or group names such as media or root. <b>Leaving empty will not change 
+                        ownership.</b>
+                      schema:
+                        type: string
+                        valid_chars: "^[0-9]*$"
+                        default: "250"
+                    - variable: disclaimer
+                      label: "Disclaimer: I have read help sections and understand the risks"
+                      schema:
+                        type: boolean
+                        default: false
+  ######################################################
+  ################ Service (Networking) ################
+  ######################################################
+  ### Service Type
+  - variable: service_type
+    group: "Service (Networking)"
+    label: "Select Service Type"
+    description: >
+      Select between a Kubernetes Service Type or No Service.
+      <br><br>A Kubernetes 'Service' is an API for networking that can exposes it's pod outside of its 
+      namespace.  There are several service types and other API's, however currently only the API Service 
+      with types clusterIP and nodePort can be configured.
+      <br><br><b>clusterIP:</b> Exposes the Service on a cluster-internal IP address. Choosing this value 
+      makes the Service only reachable from within the cluster.  However externalIPs can be configured to 
+      expose a Pod externally from the cluster.  These IP addresses including assigned ports need to be 
+      managed externally from Kubernetes by the admistrator.
+      <br><br><b>nodePort:</b> Exposes the Service on each Node's IP address at a static port.  To make 
+      the node port externally available, Kubernetes also sets up a cluster IP address, the same as if 
+      you had requested clusterIP.
+      <br><br><b>No Service (Pod only networking):</b> This does not create a service.  It is useful
+      if containers do not need to be exposed outside of its namespace or if configuring hostNetwork.
+    schema:
+      type: string
+      default: "clusterIP"
+      enum:
+        - value: "clusterIP"
+          description: >
+            Service: clusterIP - Exposes the Service only on a cluster-internal IP address or externally 
+            when an externalIP is configured
+        - value: "nodePort"
+          description: >
+            Service: nodePort - Exposes the Service on each Node's IP address at a static port
+        - value: "none"
+          description: >
+            No Service (Pod only networking) - Do not configure a Service (useful for hostNetwork or not 
+            exposing the application externally)
+  ### Cluster IP Port Configuration
+  - variable: service_clusterIPPorts
+    group: "Service (Networking)"
+    label: "Service: clusterIP Port"
+    schema:
+      show_if: [["service_type", "=", "clusterIP"]]
+      type: dict
+      attrs:
+        - variable: name
+          label: "Port Name"
+          schema:
+            type: string
+            required: true
+        - variable: protocol
+          label: "Protocol"
+          schema:
+            type: string
+            default: "TCP"
+            enum:
+              - value: "TCP"
+                description: "TCP Protocol"
+              - value: "UDP"
+                description: "UDP Protocol"
+        - variable: port
+          label: "Service Port"
+          schema:
+            type: int
+            required: true
+        - variable: targetPort
+          label: "Container Port (Target)"
+          schema:
+            type: int
+            required: true
+        ### Port Configuration
+        - variable: portList
+          label: "Additional clusterIP Ports"
+          description: "Specify ports for the service"
+          schema:
+            type: list
+            items:
+              - variable: portValues
+                label: "Additional clusterIP Port"
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: name
+                      label: "Port Name"
+                      schema:
+                        type: string
+                        required: true
+                    - variable: protocol
+                      label: "Protocol"
+                      schema:
+                        type: string
+                        default: "TCP"
+                        enum:
+                          - value: "TCP"
+                            description: "TCP Protocol"
+                          - value: "UDP"
+                            description: "UDP Protocol"
+                    - variable: port
+                      label: "Service Port"
+                      schema:
+                        type: int
+                        required: true
+                    - variable: targetPort
+                      label: "Container Port (Target)"
+                      schema:
+                        type: int
+                        required: true
+  ### Cluster IP External IP
+  - variable: service_externalIPs
+    group: "Service (Networking)"
+    label: "Service: externalIPs"
+    schema:
+      show_if: [["service_type", "=", "clusterIP"]]
+      type: dict
+      attrs:
+        - variable: externalIPsEnable
+          label: "Enable externalIP"
+          description: >
+            If there are external IP addresses that route to one or more cluster nodes, Kubernetes Services 
+            can be exposed to those IP addresses using externalIPs. Traffic that ingresses into the cluster 
+            using externalIPs (as a destination IP address), on the Service port, will be routed to one of 
+            the Service endpoints. ExternalIPs are not managed by Kubernetes and are the responsibility 
+            of the cluster administrator.
+            <br><br>As the externalIPs are not managed by Kubernetes, it is important to make sure any 
+            IP addresses are assigned to an interface.
+          schema:
+            type: boolean
+            default: true
+        - variable: externalIP
+          label: "External IP Address"
+          schema:
+            show_if: [["externalIPsEnable", "=", true]]
+            type: string
+            required: true
+            $ref:
+              - "definitions/nodeIP"
+        - variable: externalIPList
+          label: "Additional externalIP Addresses"
+          schema:
+            show_if: [["externalIPsEnable", "=", true]]
+            type: list
+            items:
+              - variable: externalIP
+                label: "External IP Address"
+                schema:
+                  type: ipaddr
+                  required: true
+  ### Node Port Configuration
+  - variable: service_NodePortPorts
+    group: "Service (Networking)"
+    label: "Service: nodePort Port"
+    schema:
+      show_if: [["service_type", "=", "nodePort"]]
+      type: dict
+      attrs:
+        - variable: name
+          label: "Port Name"
+          schema:
+            type: string
+            required: true
+        - variable: protocol
+          label: "Protocol"
+          schema:
+            type: string
+            default: "TCP"
+            enum:
+              - value: "TCP"
+                description: "TCP Protocol"
+              - value: "UDP"
+                description: "UDP Protocol"
+        - variable: nodePort
+          label: "Node Port"
+          schema:
+            type: int
+        - variable: targetPort
+          label: "Container Port (Target)"
+          schema:
+            type: int
+            required: true
+        #- variable: port
+        #  label: "Service Port"
+        #  schema:
+        #    type: int
+        #    required: true
+        ##### Port Configuration
+        - variable: portList
+          label: "Additional nodePort Ports"
+          description: "Specify ports for the service"
+          schema:
+            type: list
+            items:
+              - variable: portValues
+                label: "Service: nodePort Port"
+                description: "Configure all ports the container requires to function"
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: name
+                      label: "Port Name"
+                      schema:
+                        type: string
+                        required: true
+                    - variable: protocol
+                      label: "Protocol"
+                      schema:
+                        type: string
+                        default: "TCP"
+                        enum:
+                          - value: "TCP"
+                            description: "TCP Protocol"
+                          - value: "UDP"
+                            description: "UDP Protocol"
+                    - variable: nodePort
+                      label: "Node Port"
+                      schema:
+                        type: int
+                    - variable: targetPort
+                      label: "Container Port (Target)"
+                      schema:
+                        type: int
+                        required: true
+                    #- variable: port
+                    #  label: "Service Port"
+                    #  schema:
+                    #    type: int
+                    #    required: true
+  ### Container Port Configuration
+  - variable: pod_hostNetwork
+    group: "Service (Networking)"
+    label: "Pod: hostNetwork"
+    description: >
+      A Pod with 'hostNetwork' enabled, changes the network namespace to the host and is not normally 
+      recommended for security and scalibility reasons, so use with caution.  When enabled, all 
+      containers in the pod are directly exposed to network interfaces and traffic of the host
+    schema:
+      show_if: [["service_type", "=", "none"]]
+      type: dict
+      attrs:
+        - variable: container_hostNetworkEnable
+          label: "Enable Privleged hostNetwork Networking"
+          schema:
+            type: boolean
+            default: false

@@ -1,0 +1,126 @@
+{{/*- range $index, $deployment := .Values.deploymentList */}}
+#---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app: {{ $.Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ $.Release.Name }}
+    spec:
+      {{- if eq .Values.service_type "none" }}
+      {{- if .Values.container_hostNetworkEnable }}
+      hostNetwork: true
+      {{- end }}
+      {{- end }}
+      {{- if .Values.securityContext_supplementalGroupsEnable }}
+      securityContext:
+        supplementalGroups:
+        {{- range .Values.securityContext_supplementalGroups.supplementalGroupsList }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ $.Release.Name }}
+        image: {{ .Values.container_repository }}:{{ .Values.container_repositoryTag }}
+        imagePullPolicy: {{ .Values.container_repositoryPullPolicy }}
+        {{- if or (.Values.container_resourcesCPUEnable) (.Values.container_resourcesMemoryEnable) }}
+        resources:
+          {{- if or (.Values.container_resourcesCPU.request) (.Values.container_resourcesMemory.request) }}
+          requests:
+            {{- if .Values.container_resourcesCPUEnable }}
+            {{- if .Values.container_resourcesCPU.request }}
+            cpu: {{ .Values.container_resourcesCPU.request }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.container_resourcesMemoryEnable }}
+            {{- if .Values.container_resourcesMemory.request }}
+            memory: {{ .Values.container_resourcesMemory.request }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if or (.Values.container_resourcesCPU.limit) (.Values.container_resourcesMemory.limit) }}
+          limits:
+            {{- if .Values.container_resourcesCPUEnable }}
+            {{- if .Values.container_resourcesCPU.limit }}
+            cpu: {{ .Values.container_resourcesCPU.limit }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.container_resourcesMemoryEnable }}
+            {{- if .Values.container_resourcesMemory.limit }}
+            memory: {{ .Values.container_resourcesMemory.limit }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.container_envList }}
+        env:
+        {{- range .Values.container_envList }}
+        - name: {{ .variable | quote }}
+          value: {{ .value | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.container_securityContextProcessEnable }}
+        securityContext:
+          {{- if .Values.container_securityContextProcessEnable }}
+          {{- if .Values.container_securityContextProcess.runAsUser }}
+          runAsUser: {{ .Values.container_securityContextProcess.runAsUser }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.container_securityContextProcessEnable }}
+          {{- if .Values.container_securityContextProcess.runAsGroup }}
+          runAsGroup: {{ .Values.container_securityContextProcess.runAsGroup }}
+          {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.volume_HostPathList }}
+        volumeMounts:
+          {{- range .Values.volume_HostPathList }}
+          - mountPath: {{ .mountPath }}
+            name: {{ .name }}
+            readOnly: {{ .readOnly }}
+          {{- end }}
+        {{- end }}
+        {{- if eq .Values.service_type "clusterIP" }}
+        ports:
+        - name: {{ .Values.service_clusterIPPorts.name }}
+          containerPort: {{ .Values.service_clusterIPPorts.targetPort }}
+          protocol: {{ .Values.service_clusterIPPorts.protocol }}
+        {{- if .Values.service_clusterIPPorts.portList }}
+        {{- range .Values.service_clusterIPPorts.portList }}
+        - name: {{ .name }}
+          containerPort: {{ .targetPort }}
+          protocol: {{ .protocol }}
+        {{- end }}
+        {{- end }}
+        {{- else if eq .Values.service_type "nodePort" }}
+        ports:
+        - name: {{ .Values.service_NodePortPorts.name }}
+          containerPort: {{ .Values.service_NodePortPorts.targetPort }}
+          protocol: {{ .Values.service_NodePortPorts.protocol }}
+        {{- if .Values.service_NodePortPorts.portList }}
+        {{- range .Values.service_NodePortPorts.portList }}
+        - name: {{ .name }}
+          containerPort: {{ .targetPort }}
+          protocol: {{ .protocol }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+      {{- if .Values.volume_HostPathList }}
+      volumes:
+        {{- range .Values.volume_HostPathList }}
+        - name: {{ .name }}
+          hostPath:
+            path: {{ .hostPath }}
+        {{- end }}
+      {{- end }}
+{{/*- end */}}
