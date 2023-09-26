@@ -16,7 +16,7 @@ groups:
       Configure persistent and/or shared storage volumes that will be exposed to the container.
   - name: "Service (Networking)"
     description: >
-      Configure networking for the container. This uses Kubernetes Services API to route traffic to the container.  Please refer to the help sections for more information.
+      Configure a networking service for the container to control how traffic is routed to the container.
 
 questions:
   ##################################################
@@ -478,7 +478,7 @@ questions:
               - value: "UDP"
                 description: "UDP Protocol"
         - variable: port
-          label: "Service Port"
+          label: "Port (Cluster)"
           schema:
             type: int
             required: true
@@ -515,7 +515,7 @@ questions:
                           - value: "UDP"
                             description: "UDP Protocol"
                     - variable: port
-                      label: "Service Port"
+                      label: "Port (Cluster)"
                       schema:
                         type: int
                         required: true
@@ -591,16 +591,17 @@ questions:
           label: "Node Port"
           schema:
             type: int
+            required: true
+        - variable: port
+          label: "Port (Cluster)"
+          schema:
+            type: int
+            required: true
         - variable: targetPort
           label: "Container Port (Target)"
           schema:
             type: int
             required: true
-        #- variable: port
-        #  label: "Service Port"
-        #  schema:
-        #    type: int
-        #    required: true
         ##### Port Configuration
         - variable: portList
           label: "Additional nodePort Ports"
@@ -633,16 +634,17 @@ questions:
                       label: "Node Port"
                       schema:
                         type: int
+                        required: true
+                    - variable: port
+                      label: "Port (Cluster)"
+                      schema:
+                        type: int
+                        required: true
                     - variable: targetPort
                       label: "Container Port (Target)"
                       schema:
                         type: int
                         required: true
-                    #- variable: port
-                    #  label: "Service Port"
-                    #  schema:
-                    #    type: int
-                    #    required: true
   ### Container Port Configuration
   - variable: pod_hostNetwork
     group: "Service (Networking)"
