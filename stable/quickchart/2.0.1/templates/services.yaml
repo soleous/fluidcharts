@@ -1,0 +1,59 @@
+{{/*- range $index, $service := .Values.serviceList */}}
+#---
+{{- if ne .Values.service_type "none" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app: {{ $.Release.Name }}
+spec:
+  {{- if eq .Values.service_type "nodePort" }}
+  type: NodePort
+  {{- end }}
+  selector:
+    app: {{ $.Release.Name }}
+  {{- if eq .Values.service_type "clusterIP" }}
+  ports:
+  - name: {{ .Values.service_clusterIPPorts.name }}
+    port: {{ .Values.service_clusterIPPorts.port }}
+    protocol: {{ .Values.service_clusterIPPorts.protocol }}
+    targetPort: {{ .Values.service_clusterIPPorts.targetPort }}
+  {{- if .Values.service_clusterIPPorts.portList }}
+  {{- range .Values.service_clusterIPPorts.portList }}
+  - name: {{ .name }}
+    port: {{ .port }}
+    protocol: {{ .protocol }}
+    targetPort: {{ .targetPort }}
+  {{- end }}
+  {{- end }}
+  {{- else if eq .Values.service_type "nodePort" }}
+  ports:
+  - name: {{ .Values.service_NodePortPorts.name }}
+    port: {{ .Values.service_NodePortPorts.port }}
+    protocol: {{ .Values.service_NodePortPorts.protocol }}
+    targetPort: {{ .Values.service_NodePortPorts.targetPort }}
+    nodePort: {{ .Values.service_NodePortPorts.nodePort }}
+  {{- if .Values.service_NodePortPorts.portList }}
+  {{- range .Values.service_NodePortPorts.portList }}
+  - name: {{ .name }}
+    port: {{ .port }}
+    protocol: {{ .protocol }}
+    targetPort: {{ .targetPort }}
+    nodePort: {{ .nodePort }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if eq .Values.service_type "clusterIP" }}
+  {{- if .Values.service_externalIPs.externalIPsEnable }}
+  externalIPs:
+  - {{ .Values.service_externalIPs.externalIP }}
+  {{- end }}
+  {{- if .Values.service_externalIPs.externalIPList }}
+  {{- range .Values.service_externalIPs.externalIPList }}
+  - {{ . }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{/*- end */}}
