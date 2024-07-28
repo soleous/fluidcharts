@@ -1,4 +1,6 @@
 image:
+  pullPolicy: IfNotPresent
+  repository: plexinc/pms-docker
   tag: 1.40.4.8679-424562606
 container_resourcesCPU:
   limit: ""
