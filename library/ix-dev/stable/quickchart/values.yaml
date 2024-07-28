@@ -1,5 +1,5 @@
 image:
-  tag: latest
+  tag: 2.2.0
 container_resourcesCPU:
   limit: ""
   request: ""
