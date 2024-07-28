@@ -5,7 +5,6 @@ import sys
 
 from catalog_update.upgrade_strategy import semantic_versioning
 
-
 RE_STABLE_VERSION = re.compile(r'[0-9]+\.[0-9]+\.[0-9]+')
 
 
@@ -25,7 +24,6 @@ def newer_mapping(image_tags):
 if __name__ == '__main__':
     try:
         versions_json = json.loads(sys.stdin.read())
-        print(versions_json)
     except ValueError:
         raise ValueError('Invalid json specified')
 
