@@ -1,5 +1,5 @@
 image:
-  tag: 2
+  tag: 1.40.4.8679-424562606
 container_resourcesCPU:
   limit: ""
   request: ""
